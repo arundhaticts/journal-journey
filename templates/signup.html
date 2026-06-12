@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - JournalJourney</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles3.css') }}">
+</head>
+
+<body>
+
+    <form method="POST" action="{{ url_for('signup') }}">
+
+        <h1>Sign Up</h1>
+
+        {{ form.hidden_tag() }}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p style="color: red; text-align: center;">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <p>
+            <label>{{ form.username.label }}</label>
+            {{ form.username(size=32) }}
+
+            {% for error in form.username.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            <label>{{ form.password.label }}</label>
+            {{ form.password(size=32) }}
+
+            {% for error in form.password.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.submit() }}
+        </p>
+
+        <p class="note">
+            Already have an account?
+            <a href="{{ url_for('login') }}">
+                Log in here
+            </a>
+        </p>
+
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JournalJourney</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles1.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>JournalJourney</h1>
+
+        <h3>Welcome, {{ session['username'] }}</h3>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p style="color: green; text-align: center;">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <label for="diary_entry">
+                Write about your day
+            </label>
+
+            <textarea
+                id="diary_entry"
+                name="diary_entry"
+                rows="8"
+                required
+                placeholder="Dear Diary..."
+            ></textarea>
+
+            <br>
+
+            <input type="submit" value="Add Entry">
+
+        </form>
+
+        <br>
+
+        <a style="text-decoration:none;" href="{{ url_for('entries') }}">
+            <input type="button" value="View Your Entries">
+        </a>
+
+        <br>
+
+        <a style="text-decoration:none;" href="{{ url_for('logout') }}">
+            <input type="button" value="Logout">
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JournalJourney - Entries</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+</head>
+
+<body>
+
+    <h1>JournalJourney</h1>
+    <h3>Your Diary Entries</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p style="color: green;">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="GET" action="{{ url_for('entries') }}">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search your entries..."
+            value="{{ search_query }}"
+        >
+        <input type="submit" value="Search">
+    </form>
+
+    <ul>
+        {% for entry in diary_entries %}
+        <li>
+
+            <p class="entry">
+                {{ entry.text }}
+            </p>
+
+            <p>
+                <b>Category:</b>
+                {{ entry.category }}
+            </p>
+
+            <p>
+                <b>Sentiment:</b>
+                {{ entry.sentiment }}
+            </p>
+
+            <p>
+                <b>Date & Time:</b>
+                {{ entry.timestamp.strftime('%d-%m-%Y %I:%M %p') }}
+            </p>
+
+            <form method="POST"
+                  action="{{ url_for('delete_entry', index=entry.id) }}">
+                <input type="submit" value="Delete Entry">
+            </form>
+
+        </li>
+        {% else %}
+        <li>
+            <p style="text-align:center;">
+                No diary entries found.
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('index') }}">
+        Add New Entry
+    </a>
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</body>
+</html>

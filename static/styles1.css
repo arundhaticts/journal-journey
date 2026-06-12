@@ -1,0 +1,115 @@
+.playfair-display {
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.shadows-into-light-regular {
+    font-family: "Shadows Into Light", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.6;
+    background: #f0f8ff;
+    color: #333;
+    margin: 0 auto;
+    padding: 30px 15px;
+    max-width: 900px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    color: lightcoral;
+    margin-bottom: 10px;
+}
+
+h3 {
+    color: #555555;
+    font-size: 1.4em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    font-size: 1.15em;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(131, 94, 94, 0.34);
+    border-radius: 8px;
+    font-size: 1.1em;
+    background-color: #fff9e2;
+    font-family: "Shadows Into Light", cursive;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+a {
+    color: rgb(128, 128, 128);
+    text-decoration: none;
+}
+
+input[type="submit"] {
+    font-family: 'Playfair Display', serif;
+    background-color: lightcoral;
+    color: white;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1.05em;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin-top: 15px;
+    margin-left: auto;
+}
+
+input[type="submit"]:hover {
+    background-color: #ff8f81;
+}
+
+input[type="button"] {
+    font-family: 'Playfair Display', serif;
+    background-color: lightcoral;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1.05em;
+    transition: background-color 0.3s ease;
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+input[type="button"]:hover {
+    background-color: #ff8f81;
+}
+
+p {
+    text-align: center;
+}
