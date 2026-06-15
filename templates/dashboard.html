@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JournalJourney - Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body,
+        h1, h2, h3,
+        p, span,
+        select, button,
+        .stat-label, .stat-value {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            width: 85%;
+            max-width: 900px;
+            margin-bottom: 18px;
+        }
+
+        .range-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: white;
+            color: #ff6f61;
+            border: 2px solid #ff6f61;
+            border-radius: 25px;
+            padding: 9px 40px 9px 20px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff6f61' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .dashboard-container {
+            width: 85%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-cards {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: 18px;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            padding: 20px 25px;
+            flex: 1 1 0;
+            text-align: center;
+        }
+
+        .stat-card .stat-label {
+            color: #888;
+            font-size: 0.95em;
+            margin: 0 0 8px 0;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .stat-value {
+            color: #ff6f61;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .chart-wrapper {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>JournalJourney</h1>
+    <h3>Your Mood Dashboard</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p style="color: green;">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="controls">
+        <select id="range-select" class="range-select">
+            <option value="7" selected>Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+        </select>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="stat-cards">
+            <div class="stat-card">
+                <p class="stat-label">Total entries</p>
+                <p class="stat-value" id="stat-total">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Average mood</p>
+                <p class="stat-value" id="stat-avg">0.00</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Top category</p>
+                <p class="stat-value" id="stat-cat">N/A</p>
+            </div>
+        </div>
+
+        <div class="chart-wrapper">
+            <canvas id="moodChart"></canvas>
+        </div>
+    </div>
+
+    <div>
+        <a href="{{ url_for('entries') }}">Back to Entries</a>
+    </div>
+
+    <script id="chart-data" type="application/json">
+        {
+            "data_7": {{ data_7|tojson }},
+            "data_30": {{ data_30|tojson }}
+        }
+    </script>
+
+    <script>
+        const payload = JSON.parse(
+            document.getElementById('chart-data').textContent
+        );
+
+        // Set the global Chart.js font BEFORE the chart is created.
+        Chart.defaults.font.family = "'Playfair Display', serif";
+
+        const CORAL = '#ff6f61';
+        const CORAL_DEEP = '#d95e52';
+        const CORAL_FILL = 'rgba(255, 111, 97, 0.15)';
+
+        let currentRange = '7';
+
+        function datasetFor(range) {
+            return range === '30' ? payload.data_30 : payload.data_7;
+        }
+
+        // Replace empty days (null) with 0 so the line passes through y=0:
+        // it rises to an entry day's value and dips back to the axis on
+        // days with no entry.
+        function lineData(d) {
+            return d.daily_scores.map(function (s) {
+                return s === null ? 0 : s;
+            });
+        }
+
+        function updateStats(d) {
+            document.getElementById('stat-total').textContent = d.total_entries;
+            document.getElementById('stat-avg').textContent =
+                Number(d.avg_sentiment).toFixed(2);
+            document.getElementById('stat-cat').textContent =
+                d.most_common_category;
+        }
+
+        const initial = datasetFor(currentRange);
+        updateStats(initial);
+
+        const ctx = document.getElementById('moodChart').getContext('2d');
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: initial.dates,
+                datasets: [
+                    {
+                        label: 'Daily Average',
+                        data: lineData(initial),
+                        borderColor: CORAL,
+                        backgroundColor: CORAL_FILL,
+                        pointBackgroundColor: CORAL,
+                        pointBorderColor: CORAL,
+                        borderWidth: 1.5,
+                        fill: 'origin',
+                        tension: 0,
+                        pointRadius: 3,
+                        spanGaps: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(255,255,255,0.95)',
+                        borderColor: '#E8B4A0',
+                        borderWidth: 1,
+                        titleColor: '#4a4a4a',
+                        bodyColor: '#4a4a4a',
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            title: function (items) {
+                                return items[0].label;
+                            },
+                            label: function (item) {
+                                if (item.parsed.y === null ||
+                                    item.parsed.y === undefined) {
+                                    return item.dataset.label + ': n/a';
+                                }
+                                return item.dataset.label + ': ' +
+                                    item.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            // Shown for the 7-day view, hidden for 30-day.
+                            display: currentRange === '7'
+                        },
+                        grid: {
+                            // No vertical gridlines in either view.
+                            display: false
+                        }
+                    },
+                    y: {
+                        min: -1,
+                        max: 1,
+                        ticks: {
+                            stepSize: 0.5,
+                            callback: function (value) {
+                                if (value === 0.5) return 'Positive (+0.5)';
+                                if (value === 0) return 'Neutral (0)';
+                                if (value === -0.5) return 'Negative (-0.5)';
+                                return value;
+                            }
+                        },
+                        grid: {
+                            color: function (context) {
+                                if ([-0.5, 0, 0.5].includes(context.tick.value)) {
+                                    return 'rgba(0, 0, 0, 0.18)';
+                                }
+                                return 'rgba(0, 0, 0, 0.04)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('range-select')
+            .addEventListener('change', function (e) {
+                currentRange = e.target.value;
+                const d = datasetFor(currentRange);
+
+                chart.data.labels = d.dates;
+                chart.data.datasets[0].data = lineData(d);
+                chart.options.scales.x.ticks.display = (currentRange === '7');
+                chart.update();
+
+                updateStats(d);
+            });
+    </script>
+
+</body>
+</html>

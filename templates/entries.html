@@ -13,6 +13,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Shadows+Into+Light&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+
+    <style>
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 85%;
+            max-width: 900px;
+            margin: 0 auto 18px auto;
+        }
+
+        .top-bar .nav-left,
+        .top-bar .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-bar .search-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .top-bar a {
+            margin: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,15 +60,28 @@
         {% endif %}
     {% endwith %}
 
-    <form method="GET" action="{{ url_for('entries') }}">
-        <input
-            type="text"
-            name="search"
-            placeholder="Search your entries..."
-            value="{{ search_query }}"
-        >
-        <input type="submit" value="Search">
-    </form>
+    <div class="top-bar">
+        <div class="nav-left">
+            {% if session.user_id %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('insights') }}">AI Insights</a>
+            {% endif %}
+            <a href="{{ url_for('index') }}">Add New Entry</a>
+        </div>
+
+        <div class="nav-right">
+            <form class="search-form" method="GET" action="{{ url_for('entries') }}">
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search your entries..."
+                    value="{{ search_query }}"
+                >
+                <input type="submit" value="Search">
+            </form>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
 
     <ul>
         {% for entry in diary_entries %}
@@ -77,14 +120,6 @@
         </li>
         {% endfor %}
     </ul>
-
-    <a href="{{ url_for('index') }}">
-        Add New Entry
-    </a>
-
-    <a href="{{ url_for('logout') }}">
-        Logout
-    </a>
 
 </body>
 </html>

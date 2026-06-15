@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JournalJourney - AI Insights</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+
+    <style>
+        body,
+        h1, h2, h3,
+        p, span,
+        select, button {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .insights-container {
+            width: 85%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .insight-card {
+            background: #fff5f3;
+            border: 1px solid #ffd9d1;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            padding: 28px 32px;
+            margin-bottom: 14px;
+        }
+
+        .insight-card p {
+            color: #4a4a4a;
+            font-size: 1.1em;
+            line-height: 1.7;
+            text-align: left;
+            margin: 0 0 16px 0;
+        }
+
+        .insight-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .insight-meta {
+            color: #888;
+            font-size: 0.9em;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .insights-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .insights-actions form {
+            margin: 0;
+        }
+
+        .insights-actions a {
+            margin: 0;
+        }
+
+        .insights-actions .refresh-btn {
+            font-family: 'Playfair Display', serif;
+            background-color: lightcoral;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .insights-actions .refresh-btn:hover {
+            background-color: #ff8f81;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>JournalJourney</h1>
+    <h3>Your AI Weekly Insight</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p style="color: green;">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="insights-container">
+        <div class="insight-card">
+            {% for paragraph in insight_text.split('\n') %}
+                {% if paragraph.strip() %}
+                <p>{{ paragraph.strip() }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if generated_on %}
+        <p class="insight-meta">
+            Generated on {{ generated_on.strftime('%d %b %Y') }} · Refreshes weekly
+        </p>
+        {% endif %}
+
+        <div class="insights-actions">
+            <a href="{{ url_for('entries') }}">Back to Entries</a>
+
+            <form method="POST" action="{{ url_for('insights_refresh') }}">
+                <button type="submit" class="refresh-btn">Refresh now</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

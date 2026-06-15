@@ -61,6 +61,20 @@
 
         <br>
 
+        {% if session.user_id %}
+        <a style="text-decoration:none;" href="{{ url_for('dashboard') }}">
+            <input type="button" value="Dashboard">
+        </a>
+
+        <br>
+
+        <a style="text-decoration:none;" href="{{ url_for('insights') }}">
+            <input type="button" value="AI Insights">
+        </a>
+
+        <br>
+        {% endif %}
+
         <a style="text-decoration:none;" href="{{ url_for('logout') }}">
             <input type="button" value="Logout">
         </a>
